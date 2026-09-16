@@ -181,6 +181,11 @@ button.secondary {
   font-size: 0.95rem;
 }
 
+.turn-indicator {
+  font-weight: bold;
+  color: var(--color-accent);
+}
+
 .field-panel {
   border: 2px dashed var(--color-disabled);
   border-radius: 12px;
@@ -216,17 +221,18 @@ button.secondary {
   background: var(--color-disabled);
 }
 
-.gap-button.active {
+.gap-button.active,
+.gap-button.drag-over {
   background: rgba(56, 189, 248, 0.15);
 }
 
-.gap-button.active::after {
+.gap-button.active::after,
+.gap-button.drag-over::after {
   background: var(--color-accent);
 }
 
-.gap-button:disabled {
-  cursor: default;
-  opacity: 0.4;
+.gap-button.drag-over {
+  background: rgba(56, 189, 248, 0.3);
 }
 
 .field-card {
@@ -282,7 +288,7 @@ button.secondary {
   font-size: 0.85rem;
   font-weight: 600;
   line-height: 1.3;
-  cursor: pointer;
+  cursor: grab;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -294,6 +300,10 @@ button.secondary {
   border-color: var(--color-accent);
   background: var(--color-field-bg);
   box-shadow: 0 0 0 2px var(--color-accent);
+}
+
+.hand-card.dragging {
+  opacity: 0.4;
 }
 
 .feedback-modal {

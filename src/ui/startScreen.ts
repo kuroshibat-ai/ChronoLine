@@ -1,10 +1,15 @@
 import { DIFFICULTY_LABEL, MIN_POOL_SIZE } from "../types";
-import type { Difficulty } from "../types";
+import type { Difficulty, GameMode } from "../types";
 import { filterPool, isPoolStartable, isValidEraRange } from "../logic/pool";
 import { initGame } from "../logic/game";
+import { initMultiplayerGame } from "../logic/multiplayerGame";
 import type { AppContext } from "./types";
 
 const DIFFICULTIES: Difficulty[] = ["easy", "normal", "hard"];
+const MODES: { mode: GameMode; label: string }[] = [
+  { mode: "solo", label: "1人用" },
+  { mode: "duo", label: "2人対戦(交代プレイ)" },
+];
 
 export function renderStartScreen(root: HTMLElement, ctx: AppContext) {
   const { state } = ctx;
@@ -71,6 +76,34 @@ export function renderStartScreen(root: HTMLElement, ctx: AppContext) {
     screen.appendChild(warn);
   }
 
+  // 人数モード
+  const modeGroup = document.createElement("div");
+  modeGroup.className = "field-group";
+  const modeLabel = document.createElement("label");
+  modeLabel.textContent = "人数";
+  modeGroup.appendChild(modeLabel);
+
+  const modeRow = document.createElement("div");
+  modeRow.className = "difficulty-group";
+  modeRow.setAttribute("role", "radiogroup");
+  modeRow.setAttribute("aria-label", "人数");
+
+  for (const { mode, label } of MODES) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "difficulty-option";
+    btn.textContent = label;
+    btn.setAttribute("role", "radio");
+    btn.setAttribute("aria-pressed", String(mode === state.mode));
+    btn.setAttribute("aria-checked", String(mode === state.mode));
+    btn.addEventListener("click", () => {
+      ctx.setState({ mode });
+    });
+    modeRow.appendChild(btn);
+  }
+  modeGroup.appendChild(modeRow);
+  screen.appendChild(modeGroup);
+
   // 難易度
   const diffGroup = document.createElement("div");
   diffGroup.className = "field-group";
@@ -116,8 +149,13 @@ export function renderStartScreen(root: HTMLElement, ctx: AppContext) {
   startBtn.textContent = "開始";
   startBtn.disabled = !rangeValid || pool.length < MIN_POOL_SIZE;
   startBtn.addEventListener("click", () => {
-    const game = initGame(pool);
-    ctx.setState({ pool, game, screen: "game", selectedHandCardId: null });
+    if (state.mode === "duo") {
+      const multiplayerGame = initMultiplayerGame(pool);
+      ctx.setState({ pool, multiplayerGame, game: null, screen: "game", selectedHandCardId: null });
+    } else {
+      const game = initGame(pool);
+      ctx.setState({ pool, game, multiplayerGame: null, screen: "game", selectedHandCardId: null });
+    }
   });
   screen.appendChild(startBtn);
 
@@ -126,7 +164,7 @@ export function renderStartScreen(root: HTMLElement, ctx: AppContext) {
   backBtn.className = "secondary";
   backBtn.textContent = "教科を選びなおす";
   backBtn.addEventListener("click", () => {
-    ctx.setState({ screen: "subject", subjectId: null, deck: null, game: null });
+    ctx.setState({ screen: "subject", subjectId: null, deck: null, game: null, multiplayerGame: null });
   });
   screen.appendChild(backBtn);
 

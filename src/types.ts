@@ -43,3 +43,5 @@ export const DIFFICULTY_LABEL: Record<Difficulty, string> = {
 export const MIN_POOL_SIZE = 4;
 export const INITIAL_HAND_SIZE = 6;
 export const INITIAL_LIFE = 3;
+
+export type GameMode = "solo" | "duo";

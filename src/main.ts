@@ -3,6 +3,7 @@ import type { AppContext, AppState } from "./ui/types";
 import { renderSubjectScreen } from "./ui/subjectScreen";
 import { renderStartScreen } from "./ui/startScreen";
 import { renderGameScreen } from "./ui/gameScreen";
+import { renderDuoGameScreen } from "./ui/duoGameScreen";
 import { renderResultScreen } from "./ui/resultScreen";
 
 const root = document.getElementById("app");
@@ -17,8 +18,10 @@ let state: AppState = {
   startEra: null,
   endEra: null,
   difficulty: "normal",
+  mode: "solo",
   pool: [],
   game: null,
+  multiplayerGame: null,
   selectedHandCardId: null,
   expandedFieldCardId: null,
 };
@@ -45,7 +48,11 @@ function render() {
       renderStartScreen(root!, ctx);
       break;
     case "game":
-      renderGameScreen(root!, ctx);
+      if (state.mode === "duo") {
+        renderDuoGameScreen(root!, ctx);
+      } else {
+        renderGameScreen(root!, ctx);
+      }
       break;
     case "result":
       renderResultScreen(root!, ctx);

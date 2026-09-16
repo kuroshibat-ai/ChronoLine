@@ -1,15 +1,17 @@
-import { placeCard } from "../logic/game";
+import { placeCardMultiplayer } from "../logic/multiplayerGame";
 import { makeDraggableCard, makeDropTarget } from "./dragDrop";
 import type { AppContext } from "./types";
 
 const FEEDBACK_AUTO_CLOSE_MS = 1800;
 let feedbackTimer: ReturnType<typeof setTimeout> | null = null;
 
-export function renderGameScreen(root: HTMLElement, ctx: AppContext) {
+export function renderDuoGameScreen(root: HTMLElement, ctx: AppContext) {
   const { state } = ctx;
-  const game = state.game;
+  const game = state.multiplayerGame;
   const deck = state.deck;
   if (!game || !deck) return;
+
+  const currentPlayer = game.players[game.currentPlayerIndex];
 
   const screen = document.createElement("div");
   screen.className = "screen";
@@ -21,11 +23,12 @@ export function renderGameScreen(root: HTMLElement, ctx: AppContext) {
   // ステータスバー
   const statusBar = document.createElement("div");
   statusBar.className = "status-bar";
-  const life = document.createElement("span");
-  life.textContent = `ライフ: ${"❤".repeat(Math.max(game.life, 0))}${game.life <= 0 ? "0" : ""}`;
-  const handCount = document.createElement("span");
-  handCount.textContent = `残り手札: ${game.hand.length}枚`;
-  statusBar.append(life, handCount);
+  const turnLabel = document.createElement("span");
+  turnLabel.className = "turn-indicator";
+  turnLabel.textContent = `${currentPlayer.name}の番`;
+  const handCounts = document.createElement("span");
+  handCounts.textContent = game.players.map((p) => `${p.name}: ${p.hand.length}枚`).join(" / ");
+  statusBar.append(turnLabel, handCounts);
   screen.appendChild(statusBar);
 
   // 場
@@ -50,12 +53,12 @@ export function renderGameScreen(root: HTMLElement, ctx: AppContext) {
     gapBtn.setAttribute("aria-label", `${index + 1}番目の隙間に挿入`);
     gapBtn.addEventListener("click", () => {
       if (!state.selectedHandCardId) return;
-      const nextGame = placeCard(game, state.selectedHandCardId, index);
-      ctx.setState({ game: nextGame, selectedHandCardId: null });
+      const nextGame = placeCardMultiplayer(game, state.selectedHandCardId, index);
+      ctx.setState({ multiplayerGame: nextGame, selectedHandCardId: null });
     });
     makeDropTarget(gapBtn, (cardId) => {
-      const nextGame = placeCard(game, cardId, index);
-      ctx.setState({ game: nextGame, selectedHandCardId: null });
+      const nextGame = placeCardMultiplayer(game, cardId, index);
+      ctx.setState({ multiplayerGame: nextGame, selectedHandCardId: null });
     });
     fieldRow.appendChild(gapBtn);
   };
@@ -82,9 +85,9 @@ export function renderGameScreen(root: HTMLElement, ctx: AppContext) {
   fieldPanel.appendChild(fieldRow);
   screen.appendChild(fieldPanel);
 
-  // 手札
+  // 手札(手番プレイヤーの分のみ表示)
   const handLabel = document.createElement("h2");
-  handLabel.textContent = "手札(1枚選んで場の隙間をタップ、またはドラッグ&ドロップ)";
+  handLabel.textContent = `${currentPlayer.name}の手札(1枚選んで場の隙間をタップ、またはドラッグ&ドロップ)`;
   screen.appendChild(handLabel);
 
   const handPanel = document.createElement("div");
@@ -92,9 +95,9 @@ export function renderGameScreen(root: HTMLElement, ctx: AppContext) {
 
   const handRow = document.createElement("ul");
   handRow.className = "hand-row";
-  handRow.setAttribute("aria-label", "手札");
+  handRow.setAttribute("aria-label", `${currentPlayer.name}の手札`);
 
-  for (const card of game.hand) {
+  for (const card of currentPlayer.hand) {
     const item = document.createElement("li");
 
     const cardBtn = document.createElement("button");
@@ -117,6 +120,8 @@ export function renderGameScreen(root: HTMLElement, ctx: AppContext) {
 
   // 正誤フィードバック(一時表示)
   if (game.lastResult) {
+    const resultPlayerName = game.players[game.lastResult.playerIndex].name;
+
     const overlay = document.createElement("div");
     overlay.className = "feedback-modal";
     overlay.setAttribute("role", "status");
@@ -127,7 +132,7 @@ export function renderGameScreen(root: HTMLElement, ctx: AppContext) {
 
     const heading = document.createElement("div");
     heading.className = `feedback-title ${game.lastResult.correct ? "correct" : "wrong"}`;
-    heading.textContent = game.lastResult.correct ? "正解!" : "不正解…";
+    heading.textContent = `${resultPlayerName}: ${game.lastResult.correct ? "正解!" : "不正解…"}`;
     card.appendChild(heading);
 
     const cardTitle = document.createElement("div");
@@ -151,7 +156,7 @@ export function renderGameScreen(root: HTMLElement, ctx: AppContext) {
         clearTimeout(feedbackTimer);
         feedbackTimer = null;
       }
-      ctx.setState({ game: { ...game, lastResult: null } });
+      ctx.setState({ multiplayerGame: { ...game, lastResult: null } });
     };
     closeBtn.addEventListener("click", dismiss);
     card.appendChild(closeBtn);
