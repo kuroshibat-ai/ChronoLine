@@ -33,12 +33,6 @@ export function renderResultScreen(root: HTMLElement, ctx: AppContext) {
   const hero = document.createElement("div");
   hero.className = `result-hero ${cleared ? "cleared" : "gameover"}`;
 
-  const emoji = document.createElement("div");
-  emoji.className = "result-emoji";
-  emoji.setAttribute("aria-hidden", "true");
-  emoji.textContent = cleared ? "🎉" : "😢";
-  hero.appendChild(emoji);
-
   const title = document.createElement("h1");
   title.className = "result-title";
   title.textContent = cleared ? "クリア!" : "ゲームオーバー";
@@ -47,7 +41,7 @@ export function renderResultScreen(root: HTMLElement, ctx: AppContext) {
   if (isNewBest) {
     const badge = document.createElement("div");
     badge.className = "result-badge";
-    badge.textContent = "🏆 ベスト更新!";
+    badge.textContent = "ベスト更新!";
     hero.appendChild(badge);
   }
 

@@ -366,12 +366,6 @@ button.secondary {
   border: 2px solid #fca5a5;
 }
 
-.result-emoji {
-  font-size: 3rem;
-  line-height: 1;
-  margin-bottom: 8px;
-}
-
 .result-title {
   margin: 0;
   font-size: 1.8rem;
@@ -448,12 +442,8 @@ button.secondary {
     transition: transform 0.15s ease, background 0.15s ease;
   }
 
-  .result-emoji {
-    animation: result-pop 0.5s ease;
-  }
-
   .result-hero.cleared .result-title {
-    animation: result-pop 0.5s ease 0.1s backwards;
+    animation: result-pop 0.5s ease;
   }
 
   .result-badge {
