@@ -11,7 +11,6 @@
   --color-hand-bg: #ffffff;
   --color-hand-border: #94a3b8;
   --color-field-bg: #e0f2fe;
-  --color-field-border: #38bdf8;
   font-family: "Hiragino Sans", "Yu Gothic", system-ui, sans-serif;
 }
 
@@ -182,6 +181,13 @@ button.secondary {
   font-size: 0.95rem;
 }
 
+.field-panel {
+  border: 2px dashed var(--color-disabled);
+  border-radius: 12px;
+  background: var(--color-bg);
+  padding: 8px 10px;
+}
+
 .field-row {
   display: flex;
   flex-wrap: wrap;
@@ -229,9 +235,11 @@ button.secondary {
   min-height: 56px;
   padding: 8px 6px;
   border-radius: 8px;
-  background: var(--color-field-bg);
-  border: 1px solid var(--color-field-border);
+  background: var(--color-hand-bg);
+  border: 2px solid var(--color-hand-border);
+  box-shadow: 0 2px 4px rgba(15, 23, 42, 0.12);
   font-size: 0.78rem;
+  font-weight: 600;
   line-height: 1.25;
   cursor: pointer;
   color: var(--color-text);
@@ -240,6 +248,13 @@ button.secondary {
   align-items: center;
   justify-content: center;
   overflow-wrap: break-word;
+}
+
+.hand-panel {
+  border: 2px solid var(--color-hand-border);
+  border-radius: 12px;
+  background: var(--color-bg);
+  padding: 10px;
 }
 
 .hand-row {

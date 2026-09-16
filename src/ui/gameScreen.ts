@@ -32,6 +32,9 @@ export function renderGameScreen(root: HTMLElement, ctx: AppContext) {
   fieldLabel.textContent = "場(古い ← → 新しい)";
   screen.appendChild(fieldLabel);
 
+  const fieldPanel = document.createElement("div");
+  fieldPanel.className = "field-panel";
+
   const fieldRow = document.createElement("div");
   fieldRow.className = "field-row";
   fieldRow.setAttribute("role", "group");
@@ -72,12 +75,16 @@ export function renderGameScreen(root: HTMLElement, ctx: AppContext) {
     addGapButton(i + 1);
   }
 
-  screen.appendChild(fieldRow);
+  fieldPanel.appendChild(fieldRow);
+  screen.appendChild(fieldPanel);
 
   // 手札
   const handLabel = document.createElement("h2");
   handLabel.textContent = "手札(1枚選んで、場の隙間をタップ)";
   screen.appendChild(handLabel);
+
+  const handPanel = document.createElement("div");
+  handPanel.className = "hand-panel";
 
   const handRow = document.createElement("ul");
   handRow.className = "hand-row";
@@ -98,7 +105,8 @@ export function renderGameScreen(root: HTMLElement, ctx: AppContext) {
     item.appendChild(cardBtn);
     handRow.appendChild(item);
   }
-  screen.appendChild(handRow);
+  handPanel.appendChild(handRow);
+  screen.appendChild(handPanel);
 
   root.appendChild(screen);
 
