@@ -5,6 +5,9 @@ import type { AppContext } from "./types";
 const FEEDBACK_AUTO_CLOSE_MS = 1800;
 let feedbackTimer: ReturnType<typeof setTimeout> | null = null;
 
+// 手番プレイヤーが誰かひと目で分かるよう、手札まわりの枠色をプレイヤーごとに変える
+const PLAYER_COLORS = ["#0284c7", "#ea580c", "#7c3aed", "#059669"];
+
 export function renderDuoGameScreen(root: HTMLElement, ctx: AppContext) {
   const { state } = ctx;
   const game = state.multiplayerGame;
@@ -12,6 +15,7 @@ export function renderDuoGameScreen(root: HTMLElement, ctx: AppContext) {
   if (!game || !deck) return;
 
   const currentPlayer = game.players[game.currentPlayerIndex];
+  const playerColor = PLAYER_COLORS[game.currentPlayerIndex % PLAYER_COLORS.length];
 
   const screen = document.createElement("div");
   screen.className = "screen";
@@ -26,6 +30,7 @@ export function renderDuoGameScreen(root: HTMLElement, ctx: AppContext) {
   const turnLabel = document.createElement("span");
   turnLabel.className = "turn-indicator";
   turnLabel.textContent = `${currentPlayer.name}の番`;
+  turnLabel.style.color = playerColor;
   const handCounts = document.createElement("span");
   handCounts.textContent = game.players.map((p) => `${p.name}: ${p.hand.length}枚`).join(" / ");
   statusBar.append(turnLabel, handCounts);
@@ -92,6 +97,7 @@ export function renderDuoGameScreen(root: HTMLElement, ctx: AppContext) {
 
   const handPanel = document.createElement("div");
   handPanel.className = "hand-panel";
+  handPanel.style.borderColor = playerColor;
 
   const handRow = document.createElement("ul");
   handRow.className = "hand-row";
@@ -106,6 +112,9 @@ export function renderDuoGameScreen(root: HTMLElement, ctx: AppContext) {
     cardBtn.textContent = card.title;
     const selected = state.selectedHandCardId === card.id;
     cardBtn.setAttribute("aria-pressed", String(selected));
+    if (!selected) {
+      cardBtn.style.borderColor = playerColor;
+    }
     cardBtn.addEventListener("click", () => {
       ctx.setState({ selectedHandCardId: selected ? null : card.id });
     });
@@ -160,7 +169,10 @@ export function renderDuoGameScreen(root: HTMLElement, ctx: AppContext) {
     closeBtn.type = "button";
     closeBtn.className = "secondary";
     closeBtn.textContent = "閉じる";
+    let dismissed = false;
     const dismiss = () => {
+      if (dismissed) return;
+      dismissed = true;
       if (feedbackTimer) {
         clearTimeout(feedbackTimer);
         feedbackTimer = null;
@@ -169,6 +181,11 @@ export function renderDuoGameScreen(root: HTMLElement, ctx: AppContext) {
     };
     closeBtn.addEventListener("click", dismiss);
     card.appendChild(closeBtn);
+
+    // 正解時は画面のどこを触ってもすぐ次に進める(不正解時は解説を読めるよう閉じるボタンのみ)
+    if (game.lastResult.correct) {
+      overlay.addEventListener("click", dismiss);
+    }
 
     overlay.appendChild(card);
     root.appendChild(overlay);

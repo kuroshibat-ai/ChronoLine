@@ -202,7 +202,7 @@ button.secondary {
 }
 
 .gap-button {
-  flex: 0 0 16px;
+  flex: 0 0 32px;
   align-self: stretch;
   min-height: 56px;
   border: none;

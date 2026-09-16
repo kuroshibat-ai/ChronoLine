@@ -155,7 +155,10 @@ export function renderGameScreen(root: HTMLElement, ctx: AppContext) {
     closeBtn.type = "button";
     closeBtn.className = "secondary";
     closeBtn.textContent = "閉じる";
+    let dismissed = false;
     const dismiss = () => {
+      if (dismissed) return;
+      dismissed = true;
       if (feedbackTimer) {
         clearTimeout(feedbackTimer);
         feedbackTimer = null;
@@ -164,6 +167,11 @@ export function renderGameScreen(root: HTMLElement, ctx: AppContext) {
     };
     closeBtn.addEventListener("click", dismiss);
     card.appendChild(closeBtn);
+
+    // 正解時は画面のどこを触ってもすぐ次に進める(不正解時は解説を読めるよう閉じるボタンのみ)
+    if (game.lastResult.correct) {
+      overlay.addEventListener("click", dismiss);
+    }
 
     overlay.appendChild(card);
     root.appendChild(overlay);
