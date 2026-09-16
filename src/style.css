@@ -348,10 +348,115 @@ button.secondary {
   padding: 16px;
 }
 
+.result-hero {
+  text-align: center;
+  padding: 28px 16px;
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.result-hero.cleared {
+  background: linear-gradient(135deg, #fef9c3, #dcfce7, #dbeafe);
+  border: 2px solid #facc15;
+}
+
+.result-hero.gameover {
+  background: #fee2e2;
+  border: 2px solid #fca5a5;
+}
+
+.result-emoji {
+  font-size: 3rem;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.result-title {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.result-hero.cleared .result-title {
+  background: linear-gradient(90deg, #d97706, #16a34a, #0284c7);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.result-hero.gameover .result-title {
+  color: var(--color-wrong);
+}
+
+.result-badge {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: #facc15;
+  color: #78350f;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.confetti {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.confetti span {
+  position: absolute;
+  top: -10px;
+  width: 8px;
+  height: 14px;
+  border-radius: 2px;
+  opacity: 0.9;
+  animation-name: confetti-fall;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+@keyframes confetti-fall {
+  from {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(110vh) rotate(360deg);
+    opacity: 0.8;
+  }
+}
+
+@keyframes result-pop {
+  from {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .field-card,
   .hand-card,
   .feedback-card {
     transition: transform 0.15s ease, background 0.15s ease;
+  }
+
+  .result-emoji {
+    animation: result-pop 0.5s ease;
+  }
+
+  .result-hero.cleared .result-title {
+    animation: result-pop 0.5s ease 0.1s backwards;
+  }
+
+  .result-badge {
+    animation: result-pop 0.4s ease 0.3s backwards;
   }
 }

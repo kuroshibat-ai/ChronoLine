@@ -18,7 +18,7 @@ export function makeScoreKey(parts: ScoreKeyParts): string {
   return `${STORAGE_PREFIX}${parts.subjectId}:${parts.startEra}:${parts.endEra}:${parts.difficulty}`;
 }
 
-function isBetter(candidate: ScoreResult, current: ScoreResult): boolean {
+export function isBetterScore(candidate: ScoreResult, current: ScoreResult): boolean {
   if (candidate.mistakes !== current.mistakes) return candidate.mistakes < current.mistakes;
   return candidate.turns < current.turns;
 }
@@ -29,7 +29,7 @@ function isBetter(candidate: ScoreResult, current: ScoreResult): boolean {
  */
 export function saveScore(key: string, result: ScoreResult): void {
   const current = loadScore(key);
-  if (!current || isBetter(result, current)) {
+  if (!current || isBetterScore(result, current)) {
     localStorage.setItem(key, JSON.stringify(result));
   }
 }
