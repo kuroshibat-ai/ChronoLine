@@ -113,6 +113,15 @@ export function renderGameScreen(root: HTMLElement, ctx: AppContext) {
   handPanel.appendChild(handRow);
   screen.appendChild(handPanel);
 
+  const quitBtn = document.createElement("button");
+  quitBtn.type = "button";
+  quitBtn.className = "secondary quit-button";
+  quitBtn.textContent = "やめて選びなおす";
+  quitBtn.addEventListener("click", () => {
+    ctx.setState({ screen: "start", game: null, selectedHandCardId: null, expandedFieldCardId: null });
+  });
+  screen.appendChild(quitBtn);
+
   root.appendChild(screen);
 
   // 正誤フィードバック(一時表示)
